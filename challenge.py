@@ -44,9 +44,13 @@ for file in files:
     dates.append(datetime.datetime(1800, 1, 1, 0,0,0))#最後の行の列名を便宜的に設定
     dates = pd.to_datetime(dates)#pandasのdatetimeに型変換
     df=pd.DataFrame(list(data.values()), index=dates, columns=title)
-    df.sort_values(df.index[-1],axis=1, ascending=False)#アクセスの多い順にソート
+    df = df.sort_values(df.index[-1],axis=1, ascending=False)#アクセスの多い順にソート
     df = df[:-1]
-    df.sort_index()#時間を早い順にソート
-    df.resample('H').sum() #1時間帯に分ける
+    df = df.sort_index()#時間を早い順にソート
+    
+    df = df.resample('H').sum() #1時間帯に分ける
+    # 3H:3時間毎、T：1分毎、D：1日毎、W：一週間毎、M:月毎
+    # W-MON：月曜はじめの一週間毎
+
 
     df.to_csv('log_collection.csv')
