@@ -1,5 +1,6 @@
 # インストール
 はじめにapacheのアクセスログを解析するモジュールであるapache-log-parserをインストールした。
+
 ```
 $ pip install apache-log-parser
 ```
@@ -56,6 +57,7 @@ pprint(log(dammy))
  '''
 ```
 ここでホスト名と時間だけを抽出するよう関数を定義する。
+
 ```python
 def read_log(log, parser='%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"'):
     #host名と時間を取得
@@ -67,10 +69,33 @@ def read_log(log, parser='%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Age
 #　複数ファイルの対応
 
 複数ファイルの対応をするためにaccess_logが含まれるファイル名を全て抽出した。
+
 ```python
 path = '/var/log/httpd/access_log*'
 files = glob.glob(path)
 ```
 
 # 時間帯の指定
-開始時間と終了時間を
+開始時間と終了時間を指定した。
+
+```python
+start_time = datetime.datetime(1800, 1, 1, 0,0)
+end_time = datetime.datetime(2200, 1,1,0,0,0) 
+```
+上の時間は（年、月、日、時、分、秒）の順である。そのため、開始時間終了時間を指定する場合はその順で変更が必要。
+
+# 表
+
+このような事前準備を元にアクセスログを時間及びホスト名を元に分類していく。
+この表はcsvファイル（ファイル名：log_collection.csv）として保存した。
+表は縦にホスト名で分類し、横には時間帯で分類した。
+またホスト名で分類したとき、その並び順は総時間帯内でのアクセス数の大きい順にし、時間帯で分類したときは、時系列が古い順に並べてある。
+
+また、時間帯は1時間毎に設定した。
+
+```python
+df = df.resample('H').sum()
+# 3H:3時間毎、T：1分毎、D：1日毎、W：一週間毎、M:月毎
+# W-MON：月曜はじめの一週間毎
+```
+このように設定を変えることで設定したい時間帯を変えられる。
